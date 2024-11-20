@@ -63,8 +63,8 @@ public class BasicMatrixMultiplication {
             String formattedMemoryUsed = String.format(Locale.US, "%.2f", memoryUsed);
             String formattedExecTime = String.format(Locale.US, "%d", execTime);
 
-            writer.append(String.format("%s,%d,%s,%s,%s\n", language, size, formattedExecTime, formattedMemoryUsed, formattedCpuLoad));        } catch (
-                IOException e) {
+            writer.append(String.format("%s,%d,%s,%s,%s\n", language, size, formattedExecTime, formattedMemoryUsed, formattedCpuLoad));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
