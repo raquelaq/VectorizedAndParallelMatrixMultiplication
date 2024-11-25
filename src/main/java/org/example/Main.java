@@ -1,13 +1,17 @@
 package org.example;
 
 import static org.example.BasicMatrixMultiplication.*;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 
 public class Main {
     public static void main(String[] args) {
-        int[] sizes = {10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1024};
+        int[] sizes = {50, 100, 400, 600, 800, 1024, 2048, 4096};
         int blockSize = 50;
+        String filename = "matrix_results.csv";
 
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         Runtime runtime = Runtime.getRuntime();
@@ -58,15 +62,25 @@ public class Main {
             double efficiencyParallel = speedupParallel / numThreads;
 
             System.out.println("-----Matrix Size: " + ROWS + "x" + COLS + "-----");
-            logResults("Basic", size, BasicExecutionTime, cpuAfterBasic - cpuBeforeBasic, memoryAfterBasic - memoryBeforeBasic, 1.0, 1.0);
-            logResults("Vectorized", size, VectorizedExecutionTime, cpuAfterVectorized - cpuBeforeVectorized, memoryAfterVectorized - memoryBeforeVectorized, speedupVectorized, efficiencyVectorized);
-            logResults("Parallel", size, ParallelExecutionTime, cpuAfterParallel - cpuBeforeParallel, memoryAfterParallel - memoryBeforeParallel, speedupParallel, efficiencyParallel);
+            logResults(filename, "Basic", size, BasicExecutionTime, cpuAfterBasic - cpuBeforeBasic, memoryAfterBasic - memoryBeforeBasic, 1.0, 1.0);
+            logResults(filename, "Vectorized", size, VectorizedExecutionTime, cpuAfterVectorized - cpuBeforeVectorized, memoryAfterVectorized - memoryBeforeVectorized, speedupVectorized, efficiencyVectorized);
+            logResults(filename, "Parallel", size, ParallelExecutionTime, cpuAfterParallel - cpuBeforeParallel, memoryAfterParallel - memoryBeforeParallel, speedupParallel, efficiencyParallel);
         }
 
 
     }
-    public static void logResults(String algorithm, int size, long executionTime, double cpuUsage, long memoryUsage, double speedup, double efficiency) {
+    public static void logResults(String filename, String algorithm, int size, long executionTime, double cpuUsage, long memoryUsage, double speedup, double efficiency) {
         System.out.printf("Algorithm: %s | Matrix Size: %dx%d | Execution Time: %dms | CPU Usage: %.2f%% | Memory Usage: %d bytes | Speedup: %.2fx | Efficiency: %.2f%n",
                 algorithm, size, size, executionTime, cpuUsage * 100, memoryUsage, speedup, efficiency);
+
+        try (FileWriter writer = new FileWriter(filename, true)) {
+            if (new java.io.File(filename).length() == 0) {
+                writer.append("Algorithm,Matrix Size,Execution Time (ms),CPU Usage (%),Memory Usage (bytes),Speedup,Efficiency\n");
+            }
+            writer.append(String.format("%s,%d,%d,%.2f,%d,%.2f,%.2f%n",
+                    algorithm, size, executionTime, cpuUsage * 100, memoryUsage, speedup, efficiency));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
