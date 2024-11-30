@@ -4,11 +4,6 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 import java.util.Random;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Locale;
 
 public class BasicMatrixMultiplication {
     static int ROWS;
@@ -52,20 +47,5 @@ public class BasicMatrixMultiplication {
             }
         }
         return C;
-    }
-
-    public static void writeToCSV(String language, int size, long execTime, double memoryUsed, double cpuLoad) {
-        try (FileWriter writer = new FileWriter("../benchmark_results.csv", true)) {
-            if (Files.size(Paths.get("../benchmark_results.csv")) == 0) {
-                writer.append("Language,Matrix Size,Execution Time,Memory Use,CPU use\n");
-            }
-            String formattedCpuLoad = String.format(Locale.US, "%.2f", cpuLoad);
-            String formattedMemoryUsed = String.format(Locale.US, "%.2f", memoryUsed);
-            String formattedExecTime = String.format(Locale.US, "%d", execTime);
-
-            writer.append(String.format("%s,%d,%s,%s,%s\n", language, size, formattedExecTime, formattedMemoryUsed, formattedCpuLoad));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

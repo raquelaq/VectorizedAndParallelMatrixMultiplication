@@ -41,7 +41,7 @@ public class Main {
             long startTimeVectorized = System.currentTimeMillis();
             double cpuBeforeVectorized = osBean.getProcessCpuLoad();
             long memoryBeforeVectorized = runtime.totalMemory() - runtime.freeMemory();
-            int[][] vectorized = VectorizedMatrixMultiplication.parallelMatrixMultiplication(A, B);
+            int[][] vectorized = VectorizedMatrixMultiplication.vectorizedMatrixMultiplication(A, B);
             long endTimeVectorized = System.currentTimeMillis();
             double cpuAfterVectorized = osBean.getProcessCpuLoad();
             long memoryAfterVectorized = runtime.totalMemory() - runtime.freeMemory();

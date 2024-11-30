@@ -1,38 +1,25 @@
 package org.example;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class VectorizedMatrixMultiplication {
-    public static int[][] parallelMatrixMultiplication(int[][] A, int[][] B) {
+    public static int[][] vectorizedMatrixMultiplication(int[][] A, int[][] B) {
         int rows = A.length;
         int cols = B[0].length;
         int commonDim = B.length;
 
         int[][] C = new int[rows][cols];
 
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        for (int i = 0; i < rows; i++) {
-            final int row = i;
-            executor.submit(() -> {
-                for (int j = 0; j < cols; j++) {
-                    int sum = 0;
-                    for (int k = 0; k < commonDim; k++) {
-                        sum += A[row][k] * B[k][j];
-                    }
-                    C[row][j] = sum;
+        AtomicInteger rowCounter = new AtomicInteger(0);
+        java.util.stream.IntStream.range(0, rows).parallel().forEach(row -> {
+            for (int col = 0; col < cols; col++) {
+                int sum = 0;
+                for (int k = 0; k < commonDim; k++) {
+                    sum += A[row][k] * B[k][col];
                 }
-            });
-        }
-
-        executor.shutdown();
-        try {
-            executor.awaitTermination(1, TimeUnit.HOURS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+                C[row][col] = sum;
+            }
+        });
 
         return C;
     }
